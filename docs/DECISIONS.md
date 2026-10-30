@@ -44,3 +44,11 @@ Short log of choices made while building. Newest last.
   could not be confirmed from official docs. Known limit: return queries use the same month for
   `return_at`, so trips that return in the next month are not discovered.
 - **No third-party Travelpayouts SDK** (owner does not trust `travelpayouts-js`); direct `fetch` only.
+- **Vercel runtime fixes**: `@fastify/swagger-ui` removed (its `@fastify/static` dependency crashes on
+  Vercel with `ERR_REQUIRE_ESM`); `/docs` serves the OpenAPI JSON instead. `src/server.ts` calls
+  `listen()` without a top-level `await`, otherwise every request hung on Vercel.
+- **Fail closed on production**: with `VERCEL_ENV=production` and no `API_TOKEN`, POST/PUT/DELETE
+  return 503. GET routes are public (single user; no secrets in responses).
+- **Migrations run in the api build** (`db:migrate` in the service `buildCommand`). Preview and
+  production share the one Turso database, so a preview build migrates production too.
+- **Seed data is local only**; production starts with no watches (add them in the UI).
