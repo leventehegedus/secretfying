@@ -106,6 +106,11 @@ export const hu = {
   "detail.empty": "Nincs megfigyelés ebben az időszakban.",
   "detail.notFound": "A figyelés nem található.",
   "detail.back": "Vissza a figyelésekhez",
+  "history.title": "Előzmények",
+  "history.from": "Ettől",
+  "history.to": "Eddig",
+  "history.status": "Állapot",
+  "history.all": "Mind",
 } as const;
 
 export type Key = keyof typeof hu;
@@ -216,6 +221,11 @@ export const en: Record<Key, string> = {
   "detail.empty": "No observations in this range.",
   "detail.notFound": "Watch not found.",
   "detail.back": "Back to watches",
+  "history.title": "History",
+  "history.from": "From",
+  "history.to": "To",
+  "history.status": "Status",
+  "history.all": "All",
 };
 
 export type Params = Record<string, string | number>;

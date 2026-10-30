@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout";
 import { Dashboard } from "@/pages/Dashboard";
 import { Watches } from "@/pages/Watches";
 import { WatchDetail } from "@/pages/WatchDetail";
+import { History } from "@/pages/History";
 import { LanguageProvider } from "@/i18n/context";
 import { ApiError } from "@/lib/api";
 import { setTokenDialog } from "@/lib/auth";
@@ -28,6 +29,7 @@ export function App() {
               <Route index element={<Dashboard />} />
               <Route path="watches" element={<Watches />} />
               <Route path="watches/:id" element={<WatchDetail />} />
+              <Route path="history" element={<History />} />
             </Route>
           </Routes>
         </BrowserRouter>
