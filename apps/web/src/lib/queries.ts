@@ -1,9 +1,9 @@
-import { Deal, Settings } from "@fdw/shared";
-import type { DealStatus } from "@fdw/shared";
+import { Deal, Settings, Watch } from "@fdw/shared";
+import type { DealStatus, WatchInput } from "@fdw/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { api } from "./api";
-import { Providers, Quota, Run } from "./schemas";
+import { Place, Providers, Quota, Run } from "./schemas";
 
 export const useSettings = () =>
   useQuery({ queryKey: ["settings"], queryFn: () => api("/settings", Settings) });
@@ -41,5 +41,34 @@ export function useRefresh() {
   return useMutation({
     mutationFn: () => api("/refresh", z.unknown(), { method: "POST" }),
     onSettled: () => qc.invalidateQueries(),
+  });
+}
+
+export const useWatches = () =>
+  useQuery({ queryKey: ["watches"], queryFn: () => api("/watches", z.array(Watch)) });
+
+export const usePlaces = (q: string) =>
+  useQuery({
+    queryKey: ["places", q],
+    queryFn: () => api(`/places?q=${encodeURIComponent(q)}`, z.array(Place)),
+    enabled: q.trim().length >= 2,
+  });
+
+export function useSaveWatch(id?: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: WatchInput) =>
+      id === undefined
+        ? api("/watches", Watch, { method: "POST", body: input })
+        : api(`/watches/${id}`, Watch, { method: "PUT", body: input }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["watches"] }),
+  });
+}
+
+export function useDeleteWatch() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => api(`/watches/${id}`, z.undefined(), { method: "DELETE" }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["watches"] }),
   });
 }

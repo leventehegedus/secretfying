@@ -2,6 +2,7 @@ import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react
 import { BrowserRouter, Route, Routes } from "react-router";
 import { Layout } from "@/components/Layout";
 import { Dashboard } from "@/pages/Dashboard";
+import { Watches } from "@/pages/Watches";
 import { LanguageProvider } from "@/i18n/context";
 import { ApiError } from "@/lib/api";
 import { setTokenDialog } from "@/lib/auth";
@@ -24,6 +25,7 @@ export function App() {
           <Routes>
             <Route element={<Layout />}>
               <Route index element={<Dashboard />} />
+              <Route path="watches" element={<Watches />} />
             </Route>
           </Routes>
         </BrowserRouter>
