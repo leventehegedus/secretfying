@@ -13,7 +13,13 @@ export type ReasonCode = z.infer<typeof ReasonCode>;
 export const DealStatus = z.enum(["candidate", "verified", "stale"]);
 export type DealStatus = z.infer<typeof DealStatus>;
 
-export const ProviderStatus = z.enum(["ok", "disabled", "dry_run", "quota_exhausted", "error"]);
+export const ProviderStatus = z.enum([
+  "ok",
+  "disabled",
+  "dry_run",
+  "quota_exhausted",
+  "unavailable",
+]);
 export type ProviderStatus = z.infer<typeof ProviderStatus>;
 
 export const Deal = z.object({

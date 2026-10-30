@@ -53,6 +53,10 @@ describe("WatchInput", () => {
     expect(w.origin).toBe("BUD");
     expect(w.destination).toBe("ANYWHERE");
   });
+  it("rejects departFrom after departTo", () => {
+    const w = { destination: "LIS", departFrom: "2027-01-10", departTo: "2026-12-01" };
+    expect(WatchInput.safeParse(w).success).toBe(false);
+  });
   it("rejects minStay > maxStay", () => {
     expect(WatchInput.safeParse({ destination: "LIS", minStay: 5, maxStay: 3 }).success).toBe(
       false,

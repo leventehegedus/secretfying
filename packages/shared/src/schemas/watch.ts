@@ -19,10 +19,13 @@ type StayRules = {
   tripType: z.infer<typeof TripType>;
   minStay?: number | undefined;
   maxStay?: number | undefined;
+  departFrom?: string | undefined;
+  departTo?: string | undefined;
 };
 const stayOk = (w: StayRules) =>
   (w.minStay === undefined || w.maxStay === undefined || w.minStay <= w.maxStay) &&
-  (w.tripType === "return" || w.maxStay === undefined);
+  (w.tripType === "return" || w.maxStay === undefined) &&
+  (w.departFrom === undefined || w.departTo === undefined || w.departFrom <= w.departTo);
 
 export const WatchInput = WatchFields.refine(stayOk, { message: "invalid stay length" });
 export type WatchInput = z.infer<typeof WatchInput>;
