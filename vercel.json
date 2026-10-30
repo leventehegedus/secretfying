@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "web": {
+      "root": "apps/web",
+      "buildCommand": "cd ../.. && pnpm --filter @fdw/shared build && pnpm --filter @fdw/web build",
+      "outputDirectory": "dist",
+      "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+    },
+    "api": {
+      "root": "apps/api",
+      "entrypoint": "src/server.ts",
+      "buildCommand": "cd ../.. && pnpm --filter @fdw/shared build && pnpm --filter @fdw/api db:migrate"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": { "service": "api" } },
+    { "source": "/docs(.*)", "destination": { "service": "api" } },
+    { "source": "/(.*)", "destination": { "service": "web" } }
+  ],
+  "crons": [{ "path": "/api/cron/run", "schedule": "0 6 * * *" }]
+}
