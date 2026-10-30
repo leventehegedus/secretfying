@@ -9,6 +9,14 @@ import { matchesWatch, watchMonths } from "./watches.js";
 export type StatusMap = Partial<Record<ProviderId, ProviderStatus>>;
 export type Budget = { left: number };
 
+// A failure is never hidden by a later success.
+export function mergeStatuses(acc: StatusMap, add: StatusMap): void {
+  for (const [id, s] of Object.entries(add) as [ProviderId, ProviderStatus][]) {
+    const cur = acc[id];
+    if (cur === undefined || cur === "ok" || cur === "disabled") acc[id] = s;
+  }
+}
+
 // One row per key (source, route, dates, currency, day); the latest price wins.
 export async function storeObservations(db: Db, obs: PriceObservation[]): Promise<void> {
   if (obs.length === 0) return;

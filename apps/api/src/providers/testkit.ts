@@ -11,13 +11,16 @@ export const jsonRes = (body: unknown, status = 200): Response =>
 
 export async function testCtx(
   fetchFn: typeof fetch,
-  opts: { dryRun?: boolean; cap?: number } = {},
+  opts: { dryRun?: boolean; cap?: number; serpapiCap?: number } = {},
 ) {
   const db = await testDb();
   const cap = { daily: opts.cap ?? 100, monthly: opts.cap ?? 100 };
   const guard = new QuotaGuard(
     db,
-    { serpapi: cap, travelpayouts: cap },
+    {
+      serpapi: { daily: opts.serpapiCap ?? cap.daily, monthly: opts.serpapiCap ?? cap.monthly },
+      travelpayouts: cap,
+    },
     { now: () => NOW, tz: "Europe/Budapest", dryRun: opts.dryRun ?? false },
   );
   const log = vi.fn<(msg: string) => void>();
