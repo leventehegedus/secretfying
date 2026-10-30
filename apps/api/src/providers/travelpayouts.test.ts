@@ -17,8 +17,11 @@ const q: DiscoverQuery = {
   market: "hu",
 };
 const cfg = { TRAVELPAYOUTS_TOKEN: "SECRET-TOKEN", TRAVELPAYOUTS_MIN_INTERVAL_MS: 1000 };
-const parse = (json: unknown, log = vi.fn()) =>
-  parsePricesForDates(json, { observedAt, market: "hu", log });
+const parse = (
+  json: unknown,
+  log = vi.fn(),
+  route: Pick<DiscoverQuery, "origin" | "destination"> = q,
+) => parsePricesForDates(json, { observedAt, market: "hu", route, log });
 
 describe("parsePricesForDates", () => {
   it("maps fixture rows", () => {
@@ -42,11 +45,28 @@ describe("parsePricesForDates", () => {
   it("drops and counts price 0, bad IATA and malformed rows", () => {
     const [a, b] = fixture.data;
     const log = vi.fn();
-    const bad = { ...fixture, data: [a, { ...b, price: 0 }, { ...b, origin: "bud" }, { nope: 1 }] };
+    const bad = {
+      ...fixture,
+      data: [a, { ...b, price: 0 }, { ...b, destination: "bcn" }, { nope: 1 }],
+    };
     const r = parse(bad, log);
     expect(r.observations).toHaveLength(1);
     expect(r.dropped).toBe(3);
     expect(log).toHaveBeenCalledOnce();
+  });
+
+  it("labels rows with a queried airport and skips the city's other airports", () => {
+    const { observations, dropped } = parse(fixture, vi.fn(), {
+      origin: "BUD",
+      destination: "STN",
+    });
+    expect(dropped).toBe(0);
+    expect(observations.map((o) => o.destination)).toEqual(["STN"]);
+  });
+
+  it("keeps the city code for a city watch", () => {
+    const { observations } = parse(fixture, vi.fn(), { origin: "BUD", destination: "ROM" });
+    expect(observations.map((o) => o.destination)).toEqual(["ROM"]);
   });
 
   it("drops every row when the currency is not EUR", () => {

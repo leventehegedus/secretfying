@@ -24,6 +24,8 @@ const Envelope = z.object({
 const Row = z.object({
   origin: z.string(),
   destination: z.string(),
+  origin_airport: z.string().nullish(),
+  destination_airport: z.string().nullish(),
   price: z.number(),
   departure_at: z.string(),
   return_at: z.string().nullish(),
@@ -32,30 +34,47 @@ const Row = z.object({
   link: z.string().optional(),
 });
 
+// Rows carry the city code plus the airport. A watch may name either (LON or BGY), so a row is
+// labelled with the queried code when its city or airport matches, and skipped otherwise.
+function asQueried(want: string, city: string, airport?: string | null): string | undefined {
+  if (want === "ANYWHERE") return city;
+  return want === city || want === airport ? want : undefined;
+}
+
 export function parsePricesForDates(
   json: unknown,
-  opts: { observedAt: string; market: string; log: (msg: string) => void },
+  opts: {
+    observedAt: string;
+    market: string;
+    route: Pick<DiscoverQuery, "origin" | "destination">;
+    log: (msg: string) => void;
+  },
 ): { observations: PriceObservation[]; dropped: number } {
   const env = Envelope.parse(json);
   const currency = env.currency?.toUpperCase();
-  const rows = env.data.map((raw) => {
+  const rows = env.data.flatMap((raw) => {
     const r = Row.safeParse(raw);
-    if (!r.success) return null; // normalize() drops and counts it
+    if (!r.success) return [null]; // normalize() drops and counts it
     const d = r.data;
-    return {
-      source: "travelpayouts",
-      isCached: true,
-      observedAt: opts.observedAt,
-      currency,
-      amount: d.price,
-      origin: d.origin,
-      destination: d.destination,
-      departDate: d.departure_at.slice(0, 10),
-      returnDate: d.return_at ? d.return_at.slice(0, 10) : null,
-      stops: Math.max(d.transfers, d.return_transfers ?? 0),
-      deepLink: d.link ? `https://www.aviasales.com${d.link}` : undefined,
-      market: opts.market,
-    };
+    const origin = asQueried(opts.route.origin, d.origin, d.origin_airport);
+    const destination = asQueried(opts.route.destination, d.destination, d.destination_airport);
+    if (!origin || !destination) return []; // another airport of the city: not this watch
+    return [
+      {
+        source: "travelpayouts",
+        isCached: true,
+        observedAt: opts.observedAt,
+        currency,
+        amount: d.price,
+        origin,
+        destination,
+        departDate: d.departure_at.slice(0, 10),
+        returnDate: d.return_at ? d.return_at.slice(0, 10) : null,
+        stops: Math.max(d.transfers, d.return_transfers ?? 0),
+        deepLink: d.link ? `https://www.aviasales.com${d.link}` : undefined,
+        market: opts.market,
+      },
+    ];
   });
   return normalize(rows, opts.log);
 }
@@ -106,6 +125,7 @@ export function createTravelpayouts(
         const { observations, dropped } = parsePricesForDates(json, {
           observedAt: ctx.now().toISOString(),
           market: q.market,
+          route: q,
           log: ctx.log,
         });
         return { ok: true, observations, dropped };

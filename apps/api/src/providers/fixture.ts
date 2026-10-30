@@ -38,13 +38,11 @@ export function createFixtureProvider(): FlightPriceProvider {
       const { observations, dropped } = parsePricesForDates(shiftedTp(ctx.now()), {
         observedAt: ctx.now().toISOString(),
         market: q.market,
+        route: q,
         log: ctx.log,
       });
       const wanted = observations.filter(
-        (o) =>
-          o.origin === q.origin &&
-          (q.destination === "ANYWHERE" || o.destination === q.destination) &&
-          (o.returnDate === null) === (q.tripType === "oneway"),
+        (o) => (o.returnDate === null) === (q.tripType === "oneway"),
       );
       return { ok: true, observations: wanted.map(asFixture), dropped };
     },
