@@ -1,0 +1,62 @@
+{
+  "success": true,
+  "currency": "eur",
+  "data": [
+    {
+      "origin": "BUD",
+      "destination": "LIS",
+      "origin_airport": "BUD",
+      "destination_airport": "LIS",
+      "price": 89,
+      "airline": "TP",
+      "flight_number": "1231",
+      "departure_at": "2026-12-05T06:15:00+01:00",
+      "return_at": "2026-12-10T14:40:00+00:00",
+      "transfers": 0,
+      "return_transfers": 1,
+      "duration": 215,
+      "link": "/search/BUD0512LIS10121?t=TP1"
+    },
+    {
+      "origin": "BUD",
+      "destination": "BCN",
+      "origin_airport": "BUD",
+      "destination_airport": "BCN",
+      "price": 64,
+      "airline": "VY",
+      "flight_number": "6112",
+      "departure_at": "2026-12-12T09:00:00+01:00",
+      "return_at": "2026-12-16T18:30:00+01:00",
+      "transfers": 0,
+      "return_transfers": 0,
+      "duration": 165,
+      "link": "/search/BUD1212BCN16121?t=VY1"
+    },
+    {
+      "origin": "BUD",
+      "destination": "ROM",
+      "origin_airport": "BUD",
+      "destination_airport": "FCO",
+      "price": 39,
+      "airline": "W6",
+      "flight_number": "3001",
+      "departure_at": "2026-12-20T07:45:00+01:00",
+      "transfers": 0,
+      "duration": 125,
+      "link": "/search/BUD2012ROM1?t=W61"
+    },
+    {
+      "origin": "BUD",
+      "destination": "LON",
+      "origin_airport": "BUD",
+      "destination_airport": "STN",
+      "price": 52,
+      "airline": "FR",
+      "flight_number": "2201",
+      "departure_at": "2026-12-27T11:20:00+01:00",
+      "transfers": 1,
+      "duration": 240,
+      "link": "/search/BUD2712LON1?t=FR1"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+[
+  { "code": "BUD", "name": "Budapest", "has_flightable_airport": true },
+  { "code": "LON", "name": "London", "has_flightable_airport": true },
+  { "code": "LIS", "name": "Lisbon", "has_flightable_airport": true },
+  { "code": "ZZZ", "name": "Nowhere", "has_flightable_airport": false },
+  { "code": "BCN", "name": "Barcelona", "has_flightable_airport": true }
+]

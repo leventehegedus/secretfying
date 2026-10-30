@@ -1,0 +1,7 @@
+[
+  { "code": "LHR", "city_code": "LON", "iata_type": "airport", "flightable": true },
+  { "code": "STN", "city_code": "LON", "iata_type": "airport", "flightable": true },
+  { "code": "XYZ", "city_code": "BUD", "iata_type": "railway", "flightable": false },
+  { "code": "FCO", "city_code": "ROM", "iata_type": "airport", "flightable": true },
+  { "code": "BYI", "city_code": "BYI", "iata_type": "airport", "flightable": false }
+]
