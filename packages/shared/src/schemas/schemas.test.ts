@@ -54,7 +54,9 @@ describe("WatchInput", () => {
     expect(w.destination).toBe("ANYWHERE");
   });
   it("rejects minStay > maxStay", () => {
-    expect(WatchInput.safeParse({ destination: "LIS", minStay: 5, maxStay: 3 }).success).toBe(false);
+    expect(WatchInput.safeParse({ destination: "LIS", minStay: 5, maxStay: 3 }).success).toBe(
+      false,
+    );
   });
   it("rejects maxStay on oneway", () => {
     const r = WatchInput.safeParse({ destination: "LIS", tripType: "oneway", maxStay: 3 });

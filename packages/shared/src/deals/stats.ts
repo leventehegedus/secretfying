@@ -53,7 +53,14 @@ export function historyStats(
   const chosen = enough(month) ? month : route;
   const basis = chosen === month ? "month" : "route";
   if (!enough(chosen)) {
-    return { sufficiency: "insufficient_history", ...measure(route), basis: null, median: null, p10: null, min: null };
+    return {
+      sufficiency: "insufficient_history",
+      ...measure(route),
+      basis: null,
+      median: null,
+      p10: null,
+      min: null,
+    };
   }
   const amounts = chosen.map((h) => h.amount);
   return {
@@ -62,6 +69,7 @@ export function historyStats(
     basis,
     median: median(amounts),
     p10: percentile(amounts, settings.lowPercentile),
-    min: Math.min(...amounts),
+    // NEW_ROUTE_LOW compares against the lowest price ever stored for the route.
+    min: Math.min(...history.map((h) => h.amount)),
   };
 }

@@ -38,7 +38,12 @@ describe("percentile", () => {
 describe("historyStats", () => {
   it("13 points is insufficient with null stats", () => {
     const s = run(pts(13, 10, "2026-12-05"));
-    expect(s).toMatchObject({ sufficiency: "insufficient_history", median: null, p10: null, min: null });
+    expect(s).toMatchObject({
+      sufficiency: "insufficient_history",
+      median: null,
+      p10: null,
+      min: null,
+    });
   });
   it("14 points over 6.9 days is insufficient", () => {
     expect(run(pts(14, 6.9, "2026-12-05")).sufficiency).toBe("insufficient_history");
@@ -61,6 +66,14 @@ describe("historyStats", () => {
     const s = run(h);
     expect(s.basis).toBe("route");
     expect(s.count).toBe(20);
+  });
+  it("min is the lowest ever stored for the route, not only the window or month", () => {
+    const old = {
+      amount: 50,
+      observedAt: new Date(now.getTime() - 200 * day).toISOString(),
+      departDate: "2027-03-01",
+    };
+    expect(run([...pts(14, 7, "2026-12-05"), old]).min).toBe(50);
   });
   it("insufficient has null basis", () => {
     expect(run([]).basis).toBeNull();

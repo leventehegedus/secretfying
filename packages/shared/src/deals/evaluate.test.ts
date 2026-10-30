@@ -4,12 +4,29 @@ import { evaluateFare } from "./evaluate.js";
 import type { HistoryStats } from "./stats.js";
 
 const ok = (o: Partial<HistoryStats> = {}): HistoryStats => ({
-  sufficiency: "ok", count: 20, spanDays: 20, basis: "route", median: 100, p10: 60, min: 50, ...o,
+  sufficiency: "ok",
+  count: 20,
+  spanDays: 20,
+  basis: "route",
+  median: 100,
+  p10: 60,
+  min: 50,
+  ...o,
 });
 const insufficient: HistoryStats = {
-  sufficiency: "insufficient_history", count: 3, spanDays: 2, basis: null, median: null, p10: null, min: null,
+  sufficiency: "insufficient_history",
+  count: 3,
+  spanDays: 2,
+  basis: null,
+  median: null,
+  p10: null,
+  min: null,
 };
-const run = (amount: number, stats: HistoryStats, extra: { maxPrice?: number | null; level?: "low" } = {}) =>
+const run = (
+  amount: number,
+  stats: HistoryStats,
+  extra: { maxPrice?: number | null; level?: "low" } = {},
+) =>
   evaluateFare({
     amount,
     maxPrice: extra.maxPrice ?? null,

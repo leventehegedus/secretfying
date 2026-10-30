@@ -1,19 +1,37 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_SETTINGS } from "../schemas/settings.js";
-import { applyVerification, isAlertable, pickForVerification, rankScore, routeKey, shouldAlert } from "./pipeline.js";
+import {
+  applyVerification,
+  isAlertable,
+  pickForVerification,
+  rankScore,
+  routeKey,
+  shouldAlert,
+} from "./pipeline.js";
 import type { HistoryStats } from "./stats.js";
 
 const d = (id: string, discountPct: number | null, belowMaxPct: number | null, amount: number) => ({
-  id, discountPct, belowMaxPct, amount,
+  id,
+  discountPct,
+  belowMaxPct,
+  amount,
 });
 const stats: HistoryStats = {
-  sufficiency: "ok", count: 20, spanDays: 20, basis: "route", median: 200, p10: 100, min: 90,
+  sufficiency: "ok",
+  count: 20,
+  spanDays: 20,
+  basis: "route",
+  median: 200,
+  p10: 100,
+  min: 90,
 };
 const verify = (live: number | null, maxPrice: number | null = 120, s: HistoryStats = stats) =>
   applyVerification({
     candidateAmount: 100,
     live: live === null ? null : { amount: live },
-    maxPrice, stats: s, settings: DEFAULT_SETTINGS,
+    maxPrice,
+    stats: s,
+    settings: DEFAULT_SETTINGS,
   });
 
 describe("ranking", () => {
@@ -22,7 +40,12 @@ describe("ranking", () => {
     const b = d("b", null, 25, 50);
     const c = d("c", 40, null, 70);
     const e = d("e", 40, null, 60);
-    expect(pickForVerification([a, b, c, e], 10, () => false).map((x) => x.id)).toEqual(["e", "c", "b", "a"]);
+    expect(pickForVerification([a, b, c, e], 10, () => false).map((x) => x.id)).toEqual([
+      "e",
+      "c",
+      "b",
+      "a",
+    ]);
     expect(rankScore(a)).toBe(-Infinity);
   });
   it("skips recently verified and respects k", () => {
