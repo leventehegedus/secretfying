@@ -23,8 +23,20 @@ rule evaluation, ranking, verification outcome and alert rules; 43 tests. Built 
 reviewed (ponytail) and fixed: all-time `min` for `NEW_ROUTE_LOW`, watch date-range check,
 `ProviderStatus` uses `unavailable`.
 
-**Next:** Phase 4, Tasks 5 to 13 (`apps/api`). Task 5 needs Turso: owner must accept Turso terms at
-https://vercel.com/levente-hegedus-projects/~/integrations/accept-terms/tursocloud?source=cli, then run
-`vercel --non-interactive integration add tursocloud/database --no-claim`. Add `vercel.json` (Services +
-cron) in Phase 4; Vercel builds fail until then.
-**Open:** jCodeMunch and `.claude/agents` load only after a session restart.
+## Phase 4: apps/api (done)
+
+Config (Zod, empty = unset), Drizzle schema on Turso/libSQL with explicit dedupe keys, QuotaGuard
+(async, mutex + immediate transaction, every attempt reserves), guarded HTTP (max 1 retry),
+Travelpayouts `prices_for_dates` discovery with 20 h cache, IATA/places reference, SerpApi
+verification, fixture provider for `DRY_RUN`, registry, discovery/detection/verification services,
+idempotent `runOnce` (lock, 240 s deadline, failed-provider skip), Telegram digest, REST routes,
+`/docs` OpenAPI JSON, bearer auth (fails closed on production without `API_TOKEN`),
+`GET /api/cron/run` for Vercel Cron, seed/backfill scripts, `vercel.json` (Services + daily cron).
+103 api tests. Deployed: https://secretfying.vercel.app/api/health is 200; Turso migrated in build.
+Ponytail review findings fixed (deadline, cache TTL). Untested: verification-phase deadline and
+skipping a failed verifier on later deals.
+
+**Next:** Phase 5, `apps/web` (shadcn, i18n, dashboard, watches, watch detail, history, settings;
+the SPA must send `API_TOKEN` as a bearer token on writes, entered once and kept in localStorage).
+**Owner to do:** set `API_TOKEN`, `TRAVELPAYOUTS_TOKEN`, `SERPAPI_KEY`, `TELEGRAM_BOT_TOKEN`,
+`TELEGRAM_CHAT_ID` on Vercel (Production). Then one approved live smoke test.
