@@ -39,3 +39,8 @@ Short log of choices made while building. Newest last.
   `TURSO_AUTH_TOKEN` on all Vercel environments. Client: `@libsql/client` + `drizzle-orm/libsql`
   (mature Drizzle support, same client for `libsql://`, `file:` and `:memory:`), not the newer
   `@tursodatabase/serverless`. The integration also installed the `turso-cloud` agent skill.
+- **Travelpayouts uses only `prices_for_dates`** (also covers `ANYWHERE` by omitting `destination`);
+  `month-matrix`, `city-directions` and `special_offers` are not used because their response formats
+  could not be confirmed from official docs. Known limit: return queries use the same month for
+  `return_at`, so trips that return in the next month are not discovered.
+- **No third-party Travelpayouts SDK** (owner does not trust `travelpayouts-js`); direct `fetch` only.
