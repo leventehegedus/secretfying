@@ -31,7 +31,7 @@ export function buildApp(deps: Deps): FastifyInstance {
   // Zod in the handlers is the only validator; Fastify's ajv stays out of the way.
   app.setValidatorCompiler(() => () => true);
   registerErrors(app);
-  registerAuth(app, deps.cfg.API_TOKEN);
+  registerAuth(app, deps.cfg.API_TOKEN, deps.cfg.VERCEL_ENV === "production");
   app.register(swagger, { openapi: { info: { title: "Flight Deal Watcher", version: "0.1.0" } } });
   app.register(swaggerUi, { routePrefix: "/docs" });
   app.register(async (a) => {

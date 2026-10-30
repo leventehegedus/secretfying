@@ -34,6 +34,8 @@ const Env = z.object({
   API_TOKEN: z.string().min(1).optional(),
   CRON_SECRET: z.string().min(1).optional(),
   PORT: int(3000),
+  // Set by Vercel; production refuses mutating requests when API_TOKEN is missing.
+  VERCEL_ENV: z.enum(["production", "preview", "development"]).optional(),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
 });
 export type Config = z.infer<typeof Env>;

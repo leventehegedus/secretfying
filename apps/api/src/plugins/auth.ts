@@ -10,10 +10,17 @@ export const bearerOk = (header: string | undefined, secret: string): boolean =>
 
 const MUTATING = new Set(["POST", "PUT", "DELETE"]);
 
-export function registerAuth(app: FastifyInstance, apiToken: string | undefined): void {
-  if (!apiToken) return;
+export function registerAuth(
+  app: FastifyInstance,
+  apiToken: string | undefined,
+  requireToken: boolean,
+): void {
+  if (!apiToken && !requireToken) return;
   app.addHook("onRequest", async (req) => {
-    if (MUTATING.has(req.method) && !bearerOk(req.headers.authorization, apiToken)) {
+    if (!MUTATING.has(req.method)) return;
+    // A public deployment without a token must not accept writes.
+    if (!apiToken) throw new ApiError(503, "API_TOKEN is not configured");
+    if (!bearerOk(req.headers.authorization, apiToken)) {
       throw new ApiError(401, "unauthorized");
     }
   });

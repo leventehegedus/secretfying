@@ -24,6 +24,15 @@ describe("refresh", () => {
 });
 
 describe("auth", () => {
+  it("fails closed on Vercel production without API_TOKEN", async () => {
+    const { app } = await testApp({ env: { VERCEL_ENV: "production" } });
+    const payload = { destination: "LIS" };
+    expect((await app.inject({ method: "GET", url: "/api/watches" })).statusCode).toBe(200);
+    expect((await app.inject({ method: "POST", url: "/api/watches", payload })).statusCode).toBe(
+      503,
+    );
+  });
+
   it("API_TOKEN guards mutating routes only", async () => {
     const { app } = await testApp({ env: { API_TOKEN: "tok" } });
     const payload = { destination: "LIS" };
