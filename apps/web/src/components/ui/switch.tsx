@@ -1,6 +1,11 @@
 import { cn } from "@/lib/cn";
 
-type Props = { checked: boolean; onChange: (v: boolean) => void; label: string; disabled?: boolean };
+type Props = {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+  disabled?: boolean;
+};
 
 export function Switch({ checked, onChange, label, disabled }: Props) {
   return (

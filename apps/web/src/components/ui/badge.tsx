@@ -15,7 +15,11 @@ type Props = HTMLAttributes<HTMLSpanElement> & { tone?: Tone };
 export function Badge({ tone = "neutral", className, ...rest }: Props) {
   return (
     <span
-      className={cn("inline-block rounded px-1.5 py-0.5 text-xs font-medium", tones[tone], className)}
+      className={cn(
+        "inline-block rounded px-1.5 py-0.5 text-xs font-medium",
+        tones[tone],
+        className,
+      )}
       {...rest}
     />
   );
