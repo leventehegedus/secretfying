@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "399f0afd-349f-4e86-92eb-242cd68ca5c7",
+  "id": "14bdd482-0f85-44d1-9f9f-a730ede29790",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "alerts": {
@@ -86,6 +86,13 @@
         },
         "route_key": {
           "name": "route_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "key": {
+          "name": "key",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -177,15 +184,20 @@
         }
       },
       "indexes": {
-        "deals_unique": {
-          "name": "deals_unique",
+        "deals_key_unique": {
+          "name": "deals_key_unique",
           "columns": [
-            "watch_id",
-            "route_key",
-            "depart_date",
-            "return_date"
+            "key"
           ],
           "isUnique": true
+        },
+        "deals_watch": {
+          "name": "deals_watch",
+          "columns": [
+            "watch_id",
+            "status"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -240,6 +252,13 @@
         },
         "observed_day": {
           "name": "observed_day",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "key": {
+          "name": "key",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -317,16 +336,10 @@
         }
       },
       "indexes": {
-        "observations_unique": {
-          "name": "observations_unique",
+        "observations_key_unique": {
+          "name": "observations_key_unique",
           "columns": [
-            "source",
-            "origin",
-            "destination",
-            "depart_date",
-            "return_date",
-            "currency",
-            "observed_day"
+            "key"
           ],
           "isUnique": true
         },

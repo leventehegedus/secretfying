@@ -20,6 +20,9 @@ describe("loadConfig", () => {
     expect(c.DISCOVERY_PROVIDERS).toEqual(["fixture", "travelpayouts"]);
   });
 
+  it("treats empty values as unset", () => {
+    expect(loadConfig({ TURSO_AUTH_TOKEN: "", PORT: "" }).PORT).toBe(3000);
+  });
   it("lists bad key names but never values", () => {
     const secret = "s3cret-value";
     let message = "";

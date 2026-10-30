@@ -1,4 +1,4 @@
-import { index, integer, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const watches = sqliteTable("watches", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -24,6 +24,8 @@ export const observations = sqliteTable(
     isCached: integer("is_cached", { mode: "boolean" }).notNull(),
     observedAt: text("observed_at").notNull(),
     observedDay: text("observed_day").notNull(),
+    // observationKey(): one row per source, route, dates, currency and day.
+    key: text("key").notNull().unique(),
     expiresAt: text("expires_at"),
     currency: text("currency").notNull(),
     amount: real("amount").notNull(),
@@ -35,19 +37,7 @@ export const observations = sqliteTable(
     deepLink: text("deep_link"),
     market: text("market"),
   },
-  (t) => [
-    // SQLite treats NULLs as distinct; one-way rows are deduped by the writer upsert.
-    uniqueIndex("observations_unique").on(
-      t.source,
-      t.origin,
-      t.destination,
-      t.departDate,
-      t.returnDate,
-      t.currency,
-      t.observedDay,
-    ),
-    index("observations_route").on(t.origin, t.destination, t.observedAt),
-  ],
+  (t) => [index("observations_route").on(t.origin, t.destination, t.observedAt)],
 );
 
 export const deals = sqliteTable(
@@ -58,6 +48,8 @@ export const deals = sqliteTable(
       .notNull()
       .references(() => watches.id, { onDelete: "cascade" }),
     routeKey: text("route_key").notNull(),
+    // dealKey(): one deal per watch, route and dates.
+    key: text("key").notNull().unique(),
     departDate: text("depart_date").notNull(),
     returnDate: text("return_date"),
     status: text("status", { enum: ["candidate", "verified", "stale"] }).notNull(),
@@ -71,7 +63,7 @@ export const deals = sqliteTable(
     verifiedAt: text("verified_at"),
     verifyNote: text("verify_note"),
   },
-  (t) => [uniqueIndex("deals_unique").on(t.watchId, t.routeKey, t.departDate, t.returnDate)],
+  (t) => [index("deals_watch").on(t.watchId, t.status)],
 );
 
 export const alerts = sqliteTable(

@@ -39,7 +39,8 @@ const Env = z.object({
 export type Config = z.infer<typeof Env>;
 
 export function loadConfig(env: NodeJS.ProcessEnv): Config {
-  const r = Env.safeParse(env);
+  // Empty values (KEY= in .env files) mean "unset".
+  const r = Env.safeParse(Object.fromEntries(Object.entries(env).filter(([, v]) => v !== "")));
   if (r.success) return r.data;
   const keys = [...new Set(r.error.issues.map((i) => String(i.path[0])))];
   throw new Error(`Invalid configuration: ${keys.join(", ")}`);
