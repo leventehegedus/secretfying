@@ -32,3 +32,10 @@ Short log of choices made while building. Newest last.
   **Turso** via Vercel Marketplace replaces the SQLite file (same Drizzle SQLite dialect, `libsql`
   driver), **Vercel Cron** replaces `node-cron`. Docker/VPS deploy target from the original prompt
   dropped. Vercel project `secretfying` linked and connected to the GitHub repo.
+
+## Phase 4: api
+
+- **Turso provisioned** via Vercel Marketplace (`database-canary-diamond`); env `TURSO_DATABASE_URL`,
+  `TURSO_AUTH_TOKEN` on all Vercel environments. Client: `@libsql/client` + `drizzle-orm/libsql`
+  (mature Drizzle support, same client for `libsql://`, `file:` and `:memory:`), not the newer
+  `@tursodatabase/serverless`. The integration also installed the `turso-cloud` agent skill.
