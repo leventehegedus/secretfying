@@ -28,7 +28,7 @@ export async function detectDeals(
   runStartedAt: Date,
   settings: Settings,
 ): Promise<DealRow[]> {
-  const out: DealRow[] = [];
+  const out = new Map<string, DealRow>();
   const histories = new Map<
     string,
     Promise<{ amount: number; observedAt: string; departDate: string }[]>
@@ -81,9 +81,12 @@ export async function detectDeals(
       const [existing] = await db.select().from(deals).where(eq(deals.key, key));
       // A fresh verification attempt is never downgraded back to candidate.
       if (existing && recentlyAttempted(existing, settings, runStartedAt)) {
-        out.push(existing);
+        out.set(key, existing);
         continue;
       }
+      // Two sources can report the same dates in one run: the cheaper fare wins.
+      const seen = out.get(key);
+      if (seen && seen.amount <= o.amount) continue;
       const values = {
         status: "candidate" as const,
         reasons: ev.reasons,
@@ -108,8 +111,8 @@ export async function detectDeals(
         })
         .onConflictDoUpdate({ target: deals.key, set: values })
         .returning();
-      if (row) out.push(row);
+      if (row) out.set(key, row);
     }
   }
-  return out;
+  return [...out.values()];
 }

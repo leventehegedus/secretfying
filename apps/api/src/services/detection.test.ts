@@ -25,6 +25,18 @@ describe("detectDeals", () => {
     expect(d?.status).toBe("candidate");
   });
 
+  it("keeps the cheaper fare when two sources report the same dates in one run", async () => {
+    const db = await setup();
+    const w = watch({ maxPrice: 150 });
+    const both = [
+      { watch: w, observations: [obs({ amount: 90 }), obs({ amount: 120, source: "fixture" })] },
+    ];
+    const out = await detectDeals(db, both, NOW, DEFAULT_SETTINGS);
+    expect(out.map((d) => d.amount)).toEqual([90]);
+    const rows = await db.select().from(deals);
+    expect(rows.map((d) => d.amount)).toEqual([90]);
+  });
+
   it("uses history for the median when sufficient", async () => {
     const db = await setup();
     await insertHistory(db, 14, () => 300);

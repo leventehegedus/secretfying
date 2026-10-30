@@ -21,6 +21,8 @@ export function mergeStatuses(acc: StatusMap, add: StatusMap): void {
 export async function storeObservations(db: Db, obs: PriceObservation[]): Promise<void> {
   if (obs.length === 0) return;
   const rows = obs.map((o) => {
+    // shortcut: dedupe day is the UTC date, not TZ_SCHEDULE; only matters for manual runs
+    // between 00:00 and 01:00/02:00 Budapest. Pass the tz through if that ever bites.
     const observedDay = o.observedAt.slice(0, 10);
     return {
       ...o,
