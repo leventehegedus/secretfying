@@ -38,6 +38,7 @@ export type RunSummary = {
   notify: "sent" | "skipped" | "failed" | "none";
   notifyError?: string;
   error?: string;
+  deadline?: boolean;
   providers: StatusMap;
   quota: DigestInput["quota"];
 };
@@ -45,7 +46,8 @@ export type RunResult =
   | { ok: false; reason: "already_running" }
   | { ok: true; runId: number; status: "done" | "failed"; summary: RunSummary };
 
-const LOCK_MS = 30 * 60_000;
+const LOCK_MS = 6 * 60_000;
+const RUN_DEADLINE_MS = 240_000; // Vercel kills the function at 300 s
 const METERED: ProviderId[] = ["travelpayouts", "serpapi"];
 
 async function acquire(db: Db, now: Date): Promise<number | null> {
@@ -103,25 +105,37 @@ async function execute(d: RunDeps, startedAt: Date, s: RunSummary): Promise<void
   Object.assign(s.providers, registry.statuses);
 
   const budget = { left: cfg.MAX_DISCOVERY_CALLS_PER_RUN };
+  const limits = { deadline: startedAt.getTime() + RUN_DEADLINE_MS, down: new Set<ProviderId>() };
   const found = [];
   for (const watch of active) {
     const r = await discoverForWatch(db, watch, registry.discovery, ctx, {
       market: cfg.TRAVELPAYOUTS_MARKET,
       budget,
       tz: cfg.TZ_SCHEDULE,
+      limits,
     });
     s.queries += r.queries;
     s.stored += r.stored.length;
     s.dropped += r.dropped;
     mergeStatuses(s.providers, r.statuses);
+    if (r.deadline) s.deadline = true;
     found.push({ watch, observations: r.stored });
   }
 
   const detected = await detectDeals(db, found, startedAt, settings);
   s.deals = detected.length;
-  const v = await verifyTopDeals(db, detected, active, registry.verification, ctx, settings);
+  const v = await verifyTopDeals(
+    db,
+    detected,
+    active,
+    registry.verification,
+    ctx,
+    settings,
+    limits,
+  );
   s.verified = v.verified;
   s.stale = v.stale;
+  if (v.deadline) s.deadline = true;
   mergeStatuses(s.providers, v.statuses);
 
   for (const p of METERED) {

@@ -12,7 +12,8 @@ import type {
 
 const BASE = "https://api.travelpayouts.com";
 export const PRICES_FOR_DATES = `${BASE}/aviasales/v3/prices_for_dates`;
-const TTL_MS = 24 * 3600 * 1000;
+// 20 h, not 24: the next daily cron run must never read yesterday's response as today's price.
+const TTL_MS = 20 * 3600 * 1000;
 
 // Lenient envelope: unknown extra fields are fine; rows are validated one by one.
 const Envelope = z.object({

@@ -51,7 +51,63 @@ async function setup(opts: { serpapiCap?: number; watches?: boolean; notifier?: 
   return { ...t, deps, fetchFn, send };
 }
 
+// Fake clock: every fetch takes `stepMs`, so a run can overshoot its deadline.
+async function slowSetup(fetchFor: (u: string) => Response, stepMs: number, months: number) {
+  let t = NOW.getTime();
+  const now = () => new Date(t);
+  const urls: string[] = [];
+  const fetchFn = vi.fn(async (u: string | URL | Request) => {
+    urls.push(String(u));
+    t += stepMs;
+    return fetchFor(String(u));
+  });
+  const base = await testCtx(fetchFn);
+  const ctx = { ...base.ctx, now };
+  await insertWatch(base.db, watch({ monthsAhead: months, maxPrice: 120 }));
+  const send = vi.fn(async () => {});
+  const deps: RunDeps = {
+    db: base.db,
+    cfg,
+    registry: buildRegistry(cfg, ctx),
+    ctx,
+    notifiers: [{ name: "fake", send }],
+    now,
+  };
+  return { deps, db: base.db, urls, send };
+}
+
 describe("runOnce", () => {
+  it("stops querying at the deadline, keeps data, notifies and ends done", async () => {
+    const { deps, db, urls, send } = await slowSetup(
+      (u) => (u.includes("travelpayouts") ? jsonRes(TP) : jsonRes(serp)),
+      30_000,
+      12,
+    );
+    const r = await runOnce(deps);
+    if (!r.ok) throw new Error("refused");
+    expect(r.status).toBe("done");
+    expect(r.summary.deadline).toBe(true);
+    expect(r.summary.queries).toBeLessThan(12);
+    expect(r.summary.queries).toBeGreaterThan(0);
+    expect(urls.filter((u) => u.includes("travelpayouts"))).toHaveLength(r.summary.queries);
+    expect(r.summary.stored).toBeGreaterThan(0);
+    expect(r.summary.deals).toBeGreaterThan(0);
+    expect(r.summary.verified).toBe(0);
+    expect(send).toHaveBeenCalledTimes(1);
+    const [row] = await db.select().from(runs);
+    expect(row?.status).toBe("done");
+  });
+
+  it("does not call a provider again after it failed as unavailable", async () => {
+    const { deps, urls } = await slowSetup(() => new Response("down", { status: 500 }), 1_000, 3);
+    const r = await runOnce(deps);
+    if (!r.ok) throw new Error("refused");
+    expect(r.summary.providers.travelpayouts).toBe("unavailable");
+    expect(r.summary.deadline).toBeUndefined();
+    // retries hit the same month URL; later months must not be queried
+    expect(new Set(urls.filter((u) => u.includes("travelpayouts"))).size).toBe(1);
+  });
+
   it("discovers, verifies and sends one digest", async () => {
     const { deps, send, db } = await setup();
     const r = await runOnce(deps);
@@ -101,6 +157,14 @@ describe("runOnce", () => {
     expect(await runOnce(deps)).toMatchObject({ ok: true, status: "done" });
     const [old] = await db.select().from(runs).where(eq(runs.id, 1));
     expect(old?.status).toBe("failed");
+  });
+
+  it("takes over a lock older than 6 minutes", async () => {
+    const { deps, db } = await setup();
+    await db
+      .insert(runs)
+      .values({ status: "running", startedAt: new Date(NOW.getTime() - 7 * 60_000).toISOString() });
+    expect(await runOnce(deps)).toMatchObject({ ok: true, status: "done" });
   });
 
   it("keeps the deal a candidate with a note when serpapi quota is exhausted", async () => {

@@ -7,7 +7,8 @@ import type { FlightPriceProvider, ProviderContext } from "../providers/types.js
 import { recentlyAttempted, StatsSnapshot } from "./detection.js";
 import type { DealRow } from "./detection.js";
 import { mergeStatuses, storeObservations } from "./discovery.js";
-import type { StatusMap } from "./discovery.js";
+import { noLimits } from "./discovery.js";
+import type { RunLimits, StatusMap } from "./discovery.js";
 
 export async function verifyTopDeals(
   db: Db,
@@ -16,12 +17,17 @@ export async function verifyTopDeals(
   providers: FlightPriceProvider[],
   ctx: ProviderContext,
   settings: Settings,
-): Promise<{ verified: number; stale: number; statuses: StatusMap }> {
-  const out = { verified: 0, stale: 0, statuses: {} as StatusMap };
+  limits: RunLimits = noLimits(),
+): Promise<{ verified: number; stale: number; statuses: StatusMap; deadline: boolean }> {
+  const out = { verified: 0, stale: 0, statuses: {} as StatusMap, deadline: false };
   const picked = pickForVerification(rows, settings.verifyTopK, (d) =>
     recentlyAttempted(d, settings, ctx.now()),
   );
   for (const d of picked) {
+    if (ctx.now().getTime() > limits.deadline) {
+      out.deadline = true;
+      break;
+    }
     const watch = watches.find((w) => w.id === d.watchId);
     const [origin, destination] = d.routeKey.split("-");
     if (!watch || !origin || !destination) continue;
@@ -35,10 +41,15 @@ export async function verifyTopDeals(
     };
     const failures: string[] = [];
     for (const p of providers) {
+      if (limits.down.has(p.id)) {
+        failures.push(`${p.id} unavailable`);
+        continue;
+      }
       const r = await p.verify?.(q, ctx);
       if (!r) continue;
       mergeStatuses(out.statuses, { [p.id]: r.ok ? "ok" : r.kind });
       if (!r.ok) {
+        if (r.kind === "unavailable") limits.down.add(p.id);
         failures.push(r.reason);
         continue;
       }

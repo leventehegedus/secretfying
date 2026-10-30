@@ -8,6 +8,9 @@ import { matchesWatch, watchMonths } from "./watches.js";
 
 export type StatusMap = Partial<Record<ProviderId, ProviderStatus>>;
 export type Budget = { left: number };
+// Shared by one run: hard stop time (epoch ms) and providers that failed as unavailable.
+export type RunLimits = { deadline: number; down: Set<ProviderId> };
+export const noLimits = (): RunLimits => ({ deadline: Infinity, down: new Set() });
 
 // A failure is never hidden by a later success.
 export function mergeStatuses(acc: StatusMap, add: StatusMap): void {
@@ -55,16 +58,28 @@ export async function discoverForWatch(
   w: Watch,
   providers: FlightPriceProvider[],
   ctx: ProviderContext,
-  opts: { market: string; budget: Budget; tz: string },
-): Promise<{ stored: PriceObservation[]; dropped: number; queries: number; statuses: StatusMap }> {
+  opts: { market: string; budget: Budget; tz: string; limits?: RunLimits },
+): Promise<{
+  stored: PriceObservation[];
+  dropped: number;
+  queries: number;
+  statuses: StatusMap;
+  deadline: boolean;
+}> {
+  const limits = opts.limits ?? noLimits();
   const out = {
     stored: [] as PriceObservation[],
     dropped: 0,
     queries: 0,
     statuses: {} as StatusMap,
+    deadline: false,
   };
   for (const month of watchMonths(w, ctx.now(), opts.tz)) {
     if (opts.budget.left <= 0) break;
+    if (ctx.now().getTime() > limits.deadline) {
+      out.deadline = true;
+      break;
+    }
     opts.budget.left--;
     out.queries++;
     const q = {
@@ -76,11 +91,15 @@ export async function discoverForWatch(
       market: opts.market,
     };
     for (const p of providers) {
+      if (limits.down.has(p.id)) continue;
       const r = await p.discover?.(q, ctx);
       if (!r) continue;
       // A failure is never hidden by an earlier success.
       if (!r.ok || !out.statuses[p.id]) out.statuses[p.id] = r.ok ? "ok" : r.kind;
-      if (!r.ok) continue;
+      if (!r.ok) {
+        if (r.kind === "unavailable") limits.down.add(p.id);
+        continue;
+      }
       out.dropped += r.dropped;
       out.stored.push(...r.observations.filter((o) => matchesWatch(o, w)));
       break;
