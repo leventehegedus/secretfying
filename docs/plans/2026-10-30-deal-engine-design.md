@@ -3,6 +3,26 @@
 Status: approved for implementation (phase 2). Source of truth for requirements: the build prompt
 (sections 4 to 6). Items marked _(my call)_ were decided during design, not by the owner; review them.
 
+## Revision 1 (owner feedback, 2026-10-30)
+
+Supersedes anything below that conflicts.
+
+- **EUR only.** `Currency` is the literal `"EUR"`; no currency setting. Display still uses `Intl`.
+- **Retries: at most 1** (2 attempts total) on network error / 429 / 5xx, backoff 1000 ms. Each
+  attempt still reserves quota.
+- **No Ignav, no e-mail.** Telegram is the only notification channel; `Notifier` stays an interface.
+- **Hosting: everything on Vercel** (one project, Vercel Services: `apps/web` static SPA frontend,
+  `apps/api` Fastify backend owning `/api`). Consequences:
+  - Database: **Turso** (libSQL, Vercel Marketplace) through Drizzle's `libsql` driver; local dev and
+    tests use `file:./data/fdw.db` / `:memory:` with the same client. Replaces `better-sqlite3`.
+  - QuotaGuard `reserve` becomes async: an in-process mutex serialises callers, and each reservation
+    runs in a libSQL `write` transaction (`BEGIN IMMEDIATE`), so concurrent function instances
+    cannot both take the last slot.
+  - Scheduler: **Vercel Cron** (`0 6 * * *` UTC, about 07:00/08:00 Budapest) calls
+    `GET /api/cron/run` with `Authorization: Bearer $CRON_SECRET`. No `node-cron`, no always-on process.
+  - The run must fit one function invocation (`maxDuration` 300 s): discovery is capped per run
+    (`MAX_DISCOVERY_CALLS_PER_RUN`, default 60) and the run lock covers overlapping invocations.
+
 ## Intent
 
 Find fares from BUD that are genuinely cheap, either below an absolute price the owner sets or far

@@ -10,6 +10,21 @@
 
 **Spec:** `docs/plans/2026-10-30-deal-engine-design.md` plus build prompt sections 4 to 8 and 11.
 
+## Revision 1 (owner feedback, 2026-10-30)
+
+Applies over the tasks below; see the design doc's Revision 1.
+
+- Task 1: `Currency` = `z.literal("EUR")`; drop the `currency` setting (11 settings remain).
+- Task 5: `@libsql/client` + `drizzle-orm/libsql` instead of better-sqlite3; `DATABASE_URL` default
+  `file:./data/fdw.db`, plus `DATABASE_AUTH_TOKEN`; add `CRON_SECRET`, `MAX_DISCOVERY_CALLS_PER_RUN`;
+  drop SMTP, Ignav and `CRON_SCHEDULE`/`node-cron` config.
+- Task 6: `reserve` is `async`; HTTP helper default `retries: 1`. Concurrency test unchanged.
+- Task 8: no Ignav.
+- Task 10: no `startScheduler`; add `GET /api/cron/run` (bearer `CRON_SECRET`) in Task 11 and a
+  `crons` entry in `vercel.json`.
+- Task 12: Telegram only; no e-mail notifier.
+- Task 13: `main.ts` for local `listen`; Vercel entry exports the Fastify app.
+
 ## Global Constraints
 
 - Never fabricate, interpolate or hard-code prices outside test fixtures; missing data stays `null`.

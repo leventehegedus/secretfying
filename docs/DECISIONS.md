@@ -24,3 +24,11 @@ Short log of choices made while building. Newest last.
   percentile, insufficient history blocks `PROVIDER_PRICE_LEVEL_LOW` too, Ignav only if its API docs
   can be confirmed, `fixture` provider for `DRY_RUN` demos, retries consume quota.
 - Design builder-check done inline instead of a separate subagent, to save tokens.
+
+## Owner feedback after phase 2
+
+- EUR only; at most 1 retry per call; no Ignav; no e-mail (Telegram only).
+- Hosting moved to **Vercel** (owner choice): Vercel Services (web + Fastify API in one project),
+  **Turso** via Vercel Marketplace replaces the SQLite file (same Drizzle SQLite dialect, `libsql`
+  driver), **Vercel Cron** replaces `node-cron`. Docker/VPS deploy target from the original prompt
+  dropped. Vercel project `secretfying` linked and connected to the GitHub repo.
