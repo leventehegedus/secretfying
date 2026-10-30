@@ -1,0 +1,38 @@
+{
+  "search_metadata": {
+    "status": "Success",
+    "google_flights_url": "https://www.google.com/travel/flights?hl=en&curr=EUR"
+  },
+  "best_flights": [
+    {
+      "flights": [
+        { "airline": "TAP", "flight_number": "TP 1231" },
+        { "airline": "TAP", "flight_number": "TP 1950" }
+      ],
+      "layovers": [{ "name": "Lisbon", "duration": 80 }],
+      "total_duration": 300,
+      "price": 130,
+      "type": "Round trip"
+    }
+  ],
+  "other_flights": [
+    {
+      "flights": [{ "airline": "XX", "flight_number": "XX 1" }],
+      "layovers": [{ "name": "A" }, { "name": "B" }],
+      "total_duration": 600,
+      "price": 95
+    },
+    {
+      "flights": [{ "airline": "YY", "flight_number": "YY 2" }],
+      "layovers": [{ "name": "C" }],
+      "total_duration": 400,
+      "price": 118
+    },
+    {
+      "flights": [{ "airline": "ZZ", "flight_number": "ZZ 3" }],
+      "total_duration": 200,
+      "price": 150
+    }
+  ],
+  "price_insights": { "lowest_price": 95, "price_level": "low", "typical_price_range": [140, 210] }
+}
