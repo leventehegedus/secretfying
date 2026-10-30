@@ -124,7 +124,7 @@ export const hu = {
   "settings.verifyTolerancePct": "Ellenőrzési tűrés (%)",
   "settings.verifyTopK": "Ellenőrzött ajánlatok száma",
   "settings.verifyCacheHours": "Ellenőrzés gyorsítótár (óra)",
-  "settings.realertDropPct": "Újraértesítés ármérséklődésnél (%)",
+  "settings.realertDropPct": "Újraértesítés árcsökkenésnél (%)",
   "settings.error.range": "Érvénytelen érték.",
   "settings.notify": "Értesítések",
   "settings.notifyTest": "Teszt Telegram üzenet",

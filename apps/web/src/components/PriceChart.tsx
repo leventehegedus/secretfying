@@ -15,7 +15,7 @@ import type { Prices } from "@/lib/schemas";
 
 export function PriceChart({ prices }: { prices: Prices }) {
   const { lang, t } = useI18n();
-  const { points, lines } = chartData(prices);
+  const { points, lines, domain } = chartData(prices);
   return (
     <ComposedChart width={720} height={280} margin={{ left: 8, right: 8 }}>
       <CartesianGrid strokeDasharray="3 3" />
@@ -23,10 +23,11 @@ export function PriceChart({ prices }: { prices: Prices }) {
         dataKey="x"
         type="number"
         scale="time"
-        domain={["dataMin", "dataMax"]}
+        domain={domain}
+        ticks={lines.map((l) => l.x)}
         tickFormatter={(v: number) => formatDate(new Date(v).toISOString(), lang) ?? ""}
       />
-      <YAxis tickFormatter={(v: number) => formatMoney(v, lang) ?? ""} width={72} />
+      <YAxis tickFormatter={(v: number) => formatMoney(v, lang) ?? ""} width={96} />
       <Tooltip
         labelFormatter={(v) => formatDate(new Date(Number(v)).toISOString(), lang) ?? ""}
         formatter={(v) => formatMoney(Number(v), lang) ?? ""}

@@ -26,8 +26,12 @@ describe("chartData", () => {
     expect(lines[1]).toMatchObject({ median: 90, p10: 70 });
   });
 
-  it("maps observations to time/amount points", () => {
-    const { points } = chartData(prices);
-    expect(points).toEqual([{ x: Date.parse("2026-10-02T06:00:00.000Z"), amount: 80 }]);
+  it("puts observations at their day's midday and pads the domain by a day", () => {
+    const { points, domain } = chartData(prices);
+    expect(points).toEqual([{ x: Date.parse("2026-10-02T12:00:00.000Z"), amount: 80 }]);
+    expect(domain).toEqual([
+      Date.parse("2026-09-30T12:00:00.000Z"),
+      Date.parse("2026-10-03T12:00:00.000Z"),
+    ]);
   });
 });
