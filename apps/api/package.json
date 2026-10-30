@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@fastify/swagger": "^9.9.2",
-    "@fastify/swagger-ui": "^6.1.2",
     "@fdw/shared": "workspace:*",
     "@libsql/client": "^0.18.0",
     "drizzle-orm": "^0.45.4",

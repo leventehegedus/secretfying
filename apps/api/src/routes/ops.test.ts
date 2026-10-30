@@ -103,3 +103,13 @@ describe("notify test", () => {
     });
   });
 });
+
+describe("docs", () => {
+  it("serves the OpenAPI document at /docs", async () => {
+    const { app } = await testApp();
+    const res = await app.inject({ method: "GET", url: "/docs" });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchObject({ openapi: expect.stringMatching(/^3\./) });
+    expect(Object.keys(res.json().paths)).toContain("/api/watches");
+  });
+});

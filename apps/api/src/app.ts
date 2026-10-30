@@ -1,5 +1,4 @@
 import swagger from "@fastify/swagger";
-import swaggerUi from "@fastify/swagger-ui";
 import Fastify from "fastify";
 import type { FastifyInstance } from "fastify";
 import { registerAuth } from "./plugins/auth.js";
@@ -33,7 +32,10 @@ export function buildApp(deps: Deps): FastifyInstance {
   registerErrors(app);
   registerAuth(app, deps.cfg.API_TOKEN, deps.cfg.VERCEL_ENV === "production");
   app.register(swagger, { openapi: { info: { title: "Flight Deal Watcher", version: "0.1.0" } } });
-  app.register(swaggerUi, { routePrefix: "/docs" });
+  // Plain OpenAPI JSON; @fastify/swagger-ui pulls in @fastify/static, which crashes on Vercel (ERR_REQUIRE_ESM).
+  app.register(async (a) => {
+    a.get("/docs", { schema: { hide: true } }, async () => a.swagger());
+  });
   app.register(async (a) => {
     for (const routes of [
       infoRoutes,
