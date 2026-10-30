@@ -6,11 +6,12 @@ coverage
 .env
 .env.*
 !.env.example
-data/*.db
-data/*.db-*
+**/data/*.db
+**/data/*.db-*
 *.sqlite
 report
 test-results
 playwright-report
 .claude/settings.local.json
 .vercel
+.playwright-mcp
