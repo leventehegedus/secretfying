@@ -76,7 +76,7 @@ async function acquire(db: Db, now: Date): Promise<number | null> {
   );
 }
 
-async function loadSettings(db: Db): Promise<Settings> {
+export async function loadSettings(db: Db): Promise<Settings> {
   const [row] = await db.select().from(settingsTable).where(eq(settingsTable.id, 1));
   const r = Settings.safeParse(row?.json);
   return r.success ? r.data : DEFAULT_SETTINGS;

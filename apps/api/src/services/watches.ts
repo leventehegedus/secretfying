@@ -1,5 +1,5 @@
 import { Watch } from "@fdw/shared";
-import type { PriceObservation } from "@fdw/shared";
+import type { PriceObservation, WatchInput } from "@fdw/shared";
 import type { watches } from "../db/schema.js";
 import { dayIn } from "../util/time.js";
 
@@ -39,3 +39,11 @@ export function matchesWatch(o: PriceObservation, w: Watch): boolean {
   }
   return true;
 }
+
+export const toRow = (w: WatchInput) => ({
+  ...w,
+  departFrom: w.departFrom ?? null,
+  departTo: w.departTo ?? null,
+  minStay: w.minStay ?? null,
+  maxStay: w.maxStay ?? null,
+});
