@@ -36,7 +36,26 @@ idempotent `runOnce` (lock, 240 s deadline, failed-provider skip), Telegram dige
 Ponytail review findings fixed (deadline, cache TTL). Untested: verification-phase deadline and
 skipping a failed verifier on later deals.
 
-**Next:** Phase 5, `apps/web` (shadcn, i18n, dashboard, watches, watch detail, history, settings;
-the SPA must send `API_TOKEN` as a bearer token on writes, entered once and kept in localStorage).
+## Phase 5: apps/web (done)
+
+Plan in `docs/plans/2026-10-30-web-plan.md`. Tailwind v4, hand-written shadcn-style primitives (no
+radix), TanStack Query, React Router 7, Recharts, typed hu/en dictionary (toggle in localStorage, then
+`settings.language`). Pages: dashboard (last run, quota, refresh, current non-stale deals), watches
+(CRUD dialog, `/places` autocomplete, client + server validation), watch detail (price scatter with
+median/P10 lines, insufficient-history notice, demo/cached labels), history (date + status filter),
+settings (all keys with default hints, test Telegram, token set/clear). Bearer token from localStorage
+on writes; a 401/503 on a write opens the token dialog. 22 web tests. Built by a Sonnet subagent.
+
+Browser pass (Playwright, `DRY_RUN` fixtures) done on every page and the language toggle. Fixed:
+single-day chart collapsed (no dot, duplicate tick keys), clipped Y labels, a Hungarian label,
+`.gitignore` missed `apps/api/data/*.db`. Local run: `mkdir -p apps/api/data` before `db:migrate`.
+
+Not verified in a browser: the token dialog auto-opening on 401 (the local API ran without
+`API_TOKEN`), the Telegram test button with real credentials. Known gaps: chart is a fixed 720 px
+(scrolls on mobile), `ANYWHERE` shown untranslated, `/places` ranks substring matches before the
+exact code, dashboard fetches all deals and filters stale in the client (`shortcut:` comment),
+recharts makes the bundle > 500 kB.
+
+**Next:** deploy and check the SPA on Vercel; then the live smoke test.
 **Owner to do:** set `API_TOKEN`, `TRAVELPAYOUTS_TOKEN`, `SERPAPI_KEY`, `TELEGRAM_BOT_TOKEN`,
 `TELEGRAM_CHAT_ID` on Vercel (Production). Then one approved live smoke test.
