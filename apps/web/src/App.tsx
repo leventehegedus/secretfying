@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { Layout } from "@/components/Layout";
 import { Dashboard } from "@/pages/Dashboard";
 import { Watches } from "@/pages/Watches";
+import { WatchDetail } from "@/pages/WatchDetail";
 import { LanguageProvider } from "@/i18n/context";
 import { ApiError } from "@/lib/api";
 import { setTokenDialog } from "@/lib/auth";
@@ -26,6 +27,7 @@ export function App() {
             <Route element={<Layout />}>
               <Route index element={<Dashboard />} />
               <Route path="watches" element={<Watches />} />
+              <Route path="watches/:id" element={<WatchDetail />} />
             </Route>
           </Routes>
         </BrowserRouter>

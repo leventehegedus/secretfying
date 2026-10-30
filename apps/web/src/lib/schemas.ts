@@ -38,3 +38,29 @@ export const Place = z.object({
   kind: z.enum(["city", "airport"]),
 });
 export type Place = z.infer<typeof Place>;
+
+export const Prices = z.object({
+  series: z.array(
+    z.object({
+      observedAt: z.string(),
+      amount: z.number(),
+      departDate: z.string(),
+      returnDate: z.string().nullable(),
+      source: ProviderId,
+      isCached: z.boolean(),
+    }),
+  ),
+  stats: z.array(
+    z.object({
+      day: z.string(),
+      median: z.number().nullable(),
+      p10: z.number().nullable(),
+      sufficiency: z.enum(["ok", "insufficient_history"]),
+    }),
+  ),
+});
+export type Prices = z.infer<typeof Prices>;
+export type Observation = Prices["series"][number];
+
+export const RANGES = ["30d", "90d", "365d"] as const;
+export type Range = (typeof RANGES)[number];

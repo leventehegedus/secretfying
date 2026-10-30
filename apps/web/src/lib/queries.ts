@@ -3,7 +3,8 @@ import type { DealStatus, WatchInput } from "@fdw/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { api } from "./api";
-import { Place, Providers, Quota, Run } from "./schemas";
+import { Place, Prices, Providers, Quota, Run } from "./schemas";
+import type { Range } from "./schemas";
 
 export const useSettings = () =>
   useQuery({ queryKey: ["settings"], queryFn: () => api("/settings", Settings) });
@@ -72,3 +73,9 @@ export function useDeleteWatch() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["watches"] }),
   });
 }
+
+export const usePrices = (id: number, range: Range) =>
+  useQuery({
+    queryKey: ["prices", id, range],
+    queryFn: () => api(`/watches/${id}/prices?range=${range}`, Prices),
+  });

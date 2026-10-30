@@ -92,6 +92,20 @@ export const hu = {
   "watch.error.invalid": "Érvénytelen érték.",
   "watch.deleteConfirm": "Biztosan törlöd ezt a figyelést: {route}?",
   "watch.detail": "Részletek",
+  "detail.range.30d": "30 nap",
+  "detail.range.90d": "90 nap",
+  "detail.range.365d": "1 év",
+  "detail.chart": "Árak alakulása",
+  "detail.median": "Medián",
+  "detail.p10": "P10",
+  "detail.price": "Ár",
+  "detail.insufficient":
+    "Kevés adat: a medián és a P10 még nem számolható, csak a maximum ár alapján keresünk ajánlatot.",
+  "detail.latest": "Legutóbbi megfigyelések",
+  "detail.observed": "Megfigyelve",
+  "detail.empty": "Nincs megfigyelés ebben az időszakban.",
+  "detail.notFound": "A figyelés nem található.",
+  "detail.back": "Vissza a figyelésekhez",
 } as const;
 
 export type Key = keyof typeof hu;
@@ -188,6 +202,20 @@ export const en: Record<Key, string> = {
   "watch.error.invalid": "Invalid value.",
   "watch.deleteConfirm": "Delete this watch: {route}?",
   "watch.detail": "Details",
+  "detail.range.30d": "30 days",
+  "detail.range.90d": "90 days",
+  "detail.range.365d": "1 year",
+  "detail.chart": "Price history",
+  "detail.median": "Median",
+  "detail.p10": "P10",
+  "detail.price": "Price",
+  "detail.insufficient":
+    "Not enough history: median and P10 cannot be computed yet, deals fire on the max price only.",
+  "detail.latest": "Latest observations",
+  "detail.observed": "Observed",
+  "detail.empty": "No observations in this range.",
+  "detail.notFound": "Watch not found.",
+  "detail.back": "Back to watches",
 };
 
 export type Params = Record<string, string | number>;
