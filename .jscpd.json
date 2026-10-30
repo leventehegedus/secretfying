@@ -1,0 +1,19 @@
+{
+  "threshold": 3,
+  "minTokens": 60,
+  "minLines": 6,
+  "gitignore": true,
+  "reporters": ["console"],
+  "format": ["typescript", "tsx", "javascript"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/components/ui/**",
+    "**/drizzle/**",
+    "**/fixtures/**",
+    "**/__snapshots__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "pnpm-lock.yaml"
+  ]
+}
