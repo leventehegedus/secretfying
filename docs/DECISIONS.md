@@ -15,3 +15,12 @@ Short log of choices made while building. Newest last.
 - **Env guard allows `.env.example`**: the PreToolUse hook blocks every other `.env*` file and lockfiles.
 - **jCodeMunch** is configured and connected, but its tools were not exposed in the phase 1 session;
   lookups fell back to Grep/Read. Restart the session to pick it up.
+
+## Phase 2: design
+
+- **Opus use #1**: deal engine, provider interface and quota/verification pipeline design
+  (`docs/plans/2026-10-30-deal-engine-design.md`), the one planned Opus step.
+- Design-level calls (details in the design doc, marked "my call"): no FX conversion, nearest-rank
+  percentile, insufficient history blocks `PROVIDER_PRICE_LEVEL_LOW` too, Ignav only if its API docs
+  can be confirmed, `fixture` provider for `DRY_RUN` demos, retries consume quota.
+- Design builder-check done inline instead of a separate subagent, to save tokens.
