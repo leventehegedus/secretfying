@@ -13,5 +13,18 @@ Design in `docs/plans/2026-10-30-deal-engine-design.md` (schemas, stats, rules, 
 guard, run pipeline; "my call" items need owner review). Task plan for phases 3 and 4 in
 `docs/plans/2026-10-30-shared-and-api-plan.md` (13 tasks, TDD, one commit each).
 
-**Next:** Phase 3, Tasks 1 to 4 of the plan (`packages/shared`), subagent-driven with the `builder` agent.
-**Open:** jCodeMunch tools not loaded yet (restart session). Review the "my call" items in the design doc.
+Owner feedback applied as "Revision 1" in both docs: EUR only, max 1 retry, no Ignav/e-mail, all on
+Vercel (Services, Turso, Vercel Cron). Vercel project `secretfying` linked + connected to GitHub.
+
+## Phase 3: packages/shared (done)
+
+Schemas, stats (median, nearest-rank percentile, sufficiency with month/route basis, all-time min),
+rule evaluation, ranking, verification outcome and alert rules; 43 tests. Built by a Sonnet subagent,
+reviewed (ponytail) and fixed: all-time `min` for `NEW_ROUTE_LOW`, watch date-range check,
+`ProviderStatus` uses `unavailable`.
+
+**Next:** Phase 4, Tasks 5 to 13 (`apps/api`). Task 5 needs Turso: owner must accept Turso terms at
+https://vercel.com/levente-hegedus-projects/~/integrations/accept-terms/tursocloud?source=cli, then run
+`vercel --non-interactive integration add tursocloud/database --no-claim`. Add `vercel.json` (Services +
+cron) in Phase 4; Vercel builds fail until then.
+**Open:** jCodeMunch and `.claude/agents` load only after a session restart.
