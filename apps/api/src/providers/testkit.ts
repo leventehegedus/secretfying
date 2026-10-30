@@ -29,5 +29,5 @@ export async function testCtx(
     fetchFn,
     sleep: async () => {},
   };
-  return { ctx, guard, log };
+  return { ctx, guard, log, db };
 }
