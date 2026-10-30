@@ -79,3 +79,18 @@ export const usePrices = (id: number, range: Range) =>
     queryKey: ["prices", id, range],
     queryFn: () => api(`/watches/${id}/prices?range=${range}`, Prices),
   });
+
+export function useSaveSettings() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (s: Settings) => api("/settings", Settings, { method: "PUT", body: s }),
+    onSuccess: (saved) => qc.setQueryData(["settings"], saved),
+  });
+}
+
+const NotifyResult = z.object({
+  channels: z.array(z.object({ name: z.string(), ok: z.boolean(), error: z.string().optional() })),
+});
+
+export const useNotifyTest = () =>
+  useMutation({ mutationFn: () => api("/notify/test", NotifyResult, { method: "POST" }) });

@@ -5,6 +5,7 @@ import { Dashboard } from "@/pages/Dashboard";
 import { Watches } from "@/pages/Watches";
 import { WatchDetail } from "@/pages/WatchDetail";
 import { History } from "@/pages/History";
+import { Settings } from "@/pages/Settings";
 import { LanguageProvider } from "@/i18n/context";
 import { ApiError } from "@/lib/api";
 import { setTokenDialog } from "@/lib/auth";
@@ -30,6 +31,7 @@ export function App() {
               <Route path="watches" element={<Watches />} />
               <Route path="watches/:id" element={<WatchDetail />} />
               <Route path="history" element={<History />} />
+              <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>
         </BrowserRouter>
