@@ -9,13 +9,19 @@
     "start": "node dist/main.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "vitest run --reporter=dot"
+    "test": "vitest run --reporter=dot",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/db/migrate.ts"
   },
   "dependencies": {
     "@fdw/shared": "workspace:*",
-    "fastify": "^5.12.7"
+    "@libsql/client": "^0.18.0",
+    "drizzle-orm": "^0.45.4",
+    "fastify": "^5.12.7",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "drizzle-kit": "^0.31.11",
     "tsx": "^4.23.15"
   }
 }
